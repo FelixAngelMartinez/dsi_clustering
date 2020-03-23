@@ -1,7 +1,7 @@
 # Cargamos la biblioteca Kohonen
-library("kohonen")
-library(rstudioapi)
-
+library("kohonen") # Biblioteca para utilizar SOM
+library(rstudioapi) # Biblioteca para coger el directorio actual
+library(cluster) # Biblioteca encargada de ejecutar Silhouette
 # Limpiamos entorno de trabajo
 cat("\014")
 
@@ -130,20 +130,20 @@ plot(customer.som, type="dist.neighbours", main = "Customer data: distances")
 
 # --------------------------------------------------------------------------------
 # silhouette -> https://stackoverflow.com/questions/33999224/silhouette-plot-in-r
-#dis <- dist(customer.som$distances)
-#sil <- silhouette (customer.som$unit.classif, dis)
-#windows()
-#plot(sil, border=NA)
-#mean(sil[,3])
+# Interpretación: -1 si es un mal agrupamiento, 0 si es indiferente, 1 si es un buen agrupamiento
 
-maxrow <- 20
-maxcol <- 20
-for (row in 1:maxrow) {
-  for (col in 1:maxcol) {
+maxrow <- 5
+maxcol <- 5
+for (row in 2:maxrow) {
+  for (col in 2:maxcol) {
     customer.som <- som(data, somgrid(row, col, "hexagonal"),10000)
     dis <- dist(customer.som$distances)
     sil <- silhouette (customer.som$unit.classif, dis)
-    mean(sil[,3])
+    print(row)
+    print(col)
+    print(mean(sil[,3]))
+    windows()
+    plot(sil, col=1:(row*col), border=NA)
   }
 }
 
