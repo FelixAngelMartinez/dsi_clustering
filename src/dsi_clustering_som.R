@@ -22,6 +22,7 @@ str(data)
 summary(data)
 head(data)
 
+# --------------------------------------------------------------------------------
 # PCA
 # Calcular varianza entre variables de columnas
 apply(data, 2, var)
@@ -43,3 +44,106 @@ pca$pc2 <- pc2
 
 pca <- pca[,7:8]
 plot(pca, main = "PCA")
+
+# --------------------------------------------------------------------------------
+# PARETO
+# Bubble Sort Function
+sort.b <- function(x)
+{
+  if(!is.unsorted(x)) {stop("Vector is already sorted")}
+  if(length(x)<2){stop("vector is not long enough") } 
+  if ( !is.vector(x) )  { stop("parameter must be a vector") }
+  if ( !is.numeric(x) ) { stop("parameter must be numeric") }
+  
+  n = length(x)
+  v = x
+  
+  for(j in 1:(n-1))
+  {
+    for(i in 1:(n-j))
+    {
+      if(v[i+1]<v[i])
+      {
+        t = v[i+1]
+        v[i+1] = v[i]
+        v[i] = t    
+      }
+    }
+  }
+  print(v)
+  x = v
+}
+
+# Ventas totales por cliente
+total_ventas<-c()
+for (i in 1:nrow(data)) {
+  total_ventas_i <- as.numeric(sum(data[i,]))
+  total_ventas[i] <- as.numeric(total_ventas_i)
+}
+
+# Ordenar las ventas totales
+ordenados <- sort.b(total_ventas)
+
+# Calculo de la suma total del 20% de los clientes constituyen el 80% de los ingresos
+calculoSuma <- sum(ordenados[352:440])/sum(ordenados)
+print(calculoSuma)
+# Conocer cual realmente cual ser�a el porcentaje que nos da el 80% de las ventas
+calculoSuma <- 0
+i <- 0
+while (calculoSuma<0.80) {
+  calculoSuma <- sum(ordenados[(440-i):440])/sum(ordenados)
+  print(calculoSuma)
+  i <- i+1
+}
+print(i)
+print((440-i)/440)
+
+# --------------------------------------------------------------------------------
+# SOM -> https://cran.r-project.org/web/packages/kohonen/kohonen.pdf
+# Definimos primero los parámetros de la función som
+grid <- somgrid(5, 4, "hexagonal")
+rlen <- 10000
+
+data <- as.matrix(data)
+#customer.som <- som(data = wines.sc, grid = somgrid(5, 4, "hexagonal"))
+customer.som <- som(data, grid, rlen)
+
+# Resultados de customer.som interesantes
+#customer.som[5] #codes
+#customer.som[6] #changes
+
+#
+plot(customer.som, type = "changes", main = "Customer data: SOM")
+#
+plot(customer.som, main = "Customer data")
+# plot the quantity of samples
+plot(customer.som, type = "count", main = "Customer data: count")
+# plot the distance matrix
+plot(customer.som, type="quality")
+# plot the codebooks vectors
+plot(customer.som, type="codes")
+# plot the mapping
+#plot(customer.som, type="mapping", main = "Customer data: mapping", labels = as.integer(data), col = as.integer(data))
+plot(customer.som, type="mapping", main = "Customer data: mapping")
+# plot the distances
+plot(customer.som, type="dist.neighbours", main = "Customer data: distances")
+
+# --------------------------------------------------------------------------------
+# silhouette -> https://stackoverflow.com/questions/33999224/silhouette-plot-in-r
+#dis <- dist(customer.som$distances)
+#sil <- silhouette (customer.som$unit.classif, dis)
+#windows()
+#plot(sil, border=NA)
+#mean(sil[,3])
+
+maxrow <- 20
+maxcol <- 20
+for (row in 1:maxrow) {
+  for (col in 1:maxcol) {
+    customer.som <- som(data, somgrid(row, col, "hexagonal"),10000)
+    dis <- dist(customer.som$distances)
+    sil <- silhouette (customer.som$unit.classif, dis)
+    mean(sil[,3])
+  }
+}
+
