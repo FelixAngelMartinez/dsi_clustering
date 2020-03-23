@@ -8,7 +8,8 @@ cat("\014")
 # Cargamos y NO escalamos los datos
 setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 getwd()
-customers_data <- read.csv("data/wholesale_customers_data.csv", header = T)
+customers_data <-
+  read.csv("data/wholesale_customers_data.csv", header = T)
 
 # Data file analysis
 # Columns= 1.Channel; 2.Region; 3.Fresh; 4.Milk; 5.Grocery; 6.Frozen; 7.Detergents_Paper; 8.Delicassen
@@ -17,7 +18,7 @@ summary(customers_data)
 head(customers_data)
 
 # Vamos a ignorar las columnas 1 y 2, ya que los valores que dan no tienen relaciÛn directa con el significado sem·ntico de Èste.
-data <- customers_data[,3:8]
+data <- customers_data[, 3:8]
 str(data)
 summary(data)
 head(data)
@@ -28,21 +29,21 @@ head(data)
 apply(data, 2, var)
 
 acp <- prcomp(data,
-              center= TRUE,
+              center = TRUE,
               scale = TRUE)
 print(acp)
 plot(acp, type = "l") #Varianzas
 summary(acp) # Ver la proporciÛn acumulativa
 biplot(acp, scale = 0)
 
-pc1 <- apply(acp$rotation[,1]*data, 1, sum)
-pc2 <- apply(acp$rotation[,2]*data, 1, sum)
+pc1 <- apply(acp$rotation[, 1] * data, 1, sum)
+pc2 <- apply(acp$rotation[, 2] * data, 1, sum)
 
 pca <- data # Hacemos una copia
-pca$pc1 <- pc1 
+pca$pc1 <- pc1
 pca$pc2 <- pc2
 
-pca <- pca[,7:8]
+pca <- pca[, 7:8]
 plot(pca, main = "PCA")
 
 # --------------------------------------------------------------------------------
@@ -50,23 +51,31 @@ plot(pca, main = "PCA")
 # Bubble Sort Function
 sort.b <- function(x)
 {
-  if(!is.unsorted(x)) {stop("Vector is already sorted")}
-  if(length(x)<2){stop("vector is not long enough") } 
-  if ( !is.vector(x) )  { stop("parameter must be a vector") }
-  if ( !is.numeric(x) ) { stop("parameter must be numeric") }
+  if (!is.unsorted(x)) {
+    stop("Vector is already sorted")
+  }
+  if (length(x) < 2) {
+    stop("vector is not long enough")
+  }
+  if (!is.vector(x))  {
+    stop("parameter must be a vector")
+  }
+  if (!is.numeric(x)) {
+    stop("parameter must be numeric")
+  }
   
   n = length(x)
   v = x
   
-  for(j in 1:(n-1))
+  for (j in 1:(n - 1))
   {
-    for(i in 1:(n-j))
+    for (i in 1:(n - j))
     {
-      if(v[i+1]<v[i])
+      if (v[i + 1] < v[i])
       {
-        t = v[i+1]
-        v[i+1] = v[i]
-        v[i] = t    
+        t = v[i + 1]
+        v[i + 1] = v[i]
+        v[i] = t
       }
     }
   }
@@ -75,7 +84,7 @@ sort.b <- function(x)
 }
 
 # Ventas totales por cliente
-total_ventas<-c()
+total_ventas <- c()
 for (i in 1:nrow(data)) {
   total_ventas_i <- as.numeric(sum(data[i,]))
   total_ventas[i] <- as.numeric(total_ventas_i)
@@ -85,65 +94,93 @@ for (i in 1:nrow(data)) {
 ordenados <- sort.b(total_ventas)
 
 # Calculo de la suma total del 20% de los clientes constituyen el 80% de los ingresos
-calculoSuma <- sum(ordenados[352:440])/sum(ordenados)
+calculoSuma <- sum(ordenados[352:440]) / sum(ordenados)
 print(calculoSuma)
 # Conocer cual realmente cual serÌa el porcentaje que nos da el 80% de las ventas
 calculoSuma <- 0
 i <- 0
-while (calculoSuma<0.80) {
-  calculoSuma <- sum(ordenados[(440-i):440])/sum(ordenados)
+while (calculoSuma < 0.80) {
+  calculoSuma <- sum(ordenados[(440 - i):440]) / sum(ordenados)
   print(calculoSuma)
-  i <- i+1
+  i <- i + 1
 }
 print(i)
-print((440-i)/440)
+print((440 - i) / 440)
 
 # --------------------------------------------------------------------------------
 # SOM -> https://cran.r-project.org/web/packages/kohonen/kohonen.pdf
-# Definimos primero los par√°metros de la funci√≥n som
-grid <- somgrid(5, 4, "hexagonal")
-rlen <- 10000
-
-data <- as.matrix(data)
-#customer.som <- som(data = wines.sc, grid = somgrid(5, 4, "hexagonal"))
-customer.som <- som(data, grid, rlen)
-
-# Resultados de customer.som interesantes
-#customer.som[5] #codes
-#customer.som[6] #changes
-
-#
-plot(customer.som, type = "changes", main = "Customer data: SOM")
-#
-plot(customer.som, main = "Customer data")
-# plot the quantity of samples
-plot(customer.som, type = "count", main = "Customer data: count")
-# plot the distance matrix
-plot(customer.som, type="quality")
-# plot the codebooks vectors
-plot(customer.som, type="codes")
-# plot the mapping
-#plot(customer.som, type="mapping", main = "Customer data: mapping", labels = as.integer(data), col = as.integer(data))
-plot(customer.som, type="mapping", main = "Customer data: mapping")
-# plot the distances
-plot(customer.som, type="dist.neighbours", main = "Customer data: distances")
 
 # --------------------------------------------------------------------------------
 # silhouette -> https://stackoverflow.com/questions/33999224/silhouette-plot-in-r
 # InterpretaciÛn: -1 si es un mal agrupamiento, 0 si es indiferente, 1 si es un buen agrupamiento
-
+data <- as.matrix(data)
+types <- 2
 maxrow <- 5
 maxcol <- 5
-for (row in 2:maxrow) {
-  for (col in 2:maxcol) {
-    customer.som <- som(data, somgrid(row, col, "hexagonal"),10000)
-    dis <- dist(customer.som$distances)
-    sil <- silhouette (customer.som$unit.classif, dis)
-    print(row)
-    print(col)
-    print(mean(sil[,3]))
-    windows()
-    plot(sil, col=1:(row*col), border=NA)
+# <- array(rep(0, types*maxrow*maxcol),c(types, maxrow, maxcol));
+#means = sample(types:maxrow,maxcol,replace = TRUE)
+topmean <- -1
+toptype <- 0
+toprow <- 0
+topcol <- 0
+for (i in 1:types) {
+  if (i == 1) {
+    type <- "rectangular"
+  } else if (i == 2) {
+    type <- "hexagonal"
+  }
+  #ComprobaciÛn de las dos primeras combinaciones
+  
+  for (row in 1:maxrow) {
+    for (col in 1:maxcol) {
+      if (row == 1 && col == 1) {
+        
+      } else{
+        customer.som <- som(data, somgrid(row, col, type), 10000)
+        dis <- dist(customer.som$distances)
+        sil <- silhouette (customer.som$unit.classif, dis)
+        print(type)
+        print(row)
+        print(col)
+        mean <- mean(sil[, 3])
+        print(mean)
+        ##windows()
+        #plot(sil, col = 1:(row * col), border = NA, main = "Silhouette")
+        if (mean > topmean) {
+          topmean <- mean
+          toptype <- i
+          toprow <- row
+          topcol <- col
+          topcustomer.som <- customer.som
+        }
+      }
+    }
   }
 }
-
+print(topmean)
+print(toptype)
+print(toprow)
+print(topcol)
+# Plot factor de Silhouette
+#windows()
+sil <- silhouette (topcustomer.som$unit.classif, dis)
+plot(sil,
+     col = 1:(toprow * topcol),
+     border = NA,
+     main = "Silhouette")
+#Plot
+#
+windows()
+plot(topcustomer.som, type = "changes", main = "Customer data: SOM")
+#
+plot(topcustomer.som, main = "Customer data")
+# plot the quantity of samples
+plot(topcustomer.som, type = "count", main = "Customer data: count")
+# plot the distance matrix
+plot(topcustomer.som, type = "quality")
+# plot the codebooks vectors
+plot(topcustomer.som, type = "codes")
+# plot the mapping
+plot(topcustomer.som, type = "mapping", main = "Customer data: mapping")
+# plot the distances
+plot(topcustomer.som, type = "dist.neighbours", main = "Customer data: distances")
