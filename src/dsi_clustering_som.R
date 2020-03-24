@@ -46,6 +46,7 @@ pca$pc2 <- pc2
 pca <- pca[, 7:8]
 plot(pca, main = "PCA")
 
+write.csv(pca, file="data/pca_pc1pc2.csv", row.names = TRUE)
 # --------------------------------------------------------------------------------
 # PARETO
 # Bubble Sort Function
@@ -108,8 +109,7 @@ print(i)
 print((440 - i) / 440)
 
 # --------------------------------------------------------------------------------
-# SOM -> https://cran.r-project.org/web/packages/kohonen/kohonen.pdf
-
+# SOM -> https://cran.r-project.org/web/packages/kohonen/kohonen.pdf https://www.rdocumentation.org/packages/kohonen/versions/2.0.19/topics/som
 # --------------------------------------------------------------------------------
 # silhouette -> https://stackoverflow.com/questions/33999224/silhouette-plot-in-r
 # Interpretación: -1 si es un mal agrupamiento, 0 si es indiferente, 1 si es un buen agrupamiento
@@ -170,7 +170,7 @@ plot(sil,
      main = "Silhouette")
 #Plot
 #
-windows()
+#windows()
 plot(topcustomer.som, type = "changes", main = "Customer data: SOM")
 #
 plot(topcustomer.som, main = "Customer data")
@@ -183,4 +183,25 @@ plot(topcustomer.som, type = "codes")
 # plot the mapping
 plot(topcustomer.som, type = "mapping", main = "Customer data: mapping")
 # plot the distances
-plot(topcustomer.som, type = "dist.neighbours", main = "Customer data: distances")
+#plot(topcustomer.som, type = "dist.neighbours", main = "Customer data: distances")
+
+# Calculo de los representantes de los grupos
+data <- cbind(data,Grupo=topcustomer.som$unit.classif)
+# Calcular media del grupo 1 en frescos
+suma <- 0
+contador <- 0
+for (i in 1:max(data[,7])) {
+  for (j in 1:nrow(data)) {
+    if(data[j,7]==1){
+      suma <- suma + data[j,1]
+      contador <- contador + 1
+    }
+  }
+  grupo1 <- suma/contador
+  suma <- 0
+  contador <- 0
+}
+print(grupo1)
+
+# Exportar datos
+write.csv(data, file="data/data_groups.csv", row.names = TRUE)
