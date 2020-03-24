@@ -32,9 +32,13 @@ acp <- prcomp(data,
               center = TRUE,
               scale = TRUE)
 print(acp)
-plot(acp, type = "l") #Varianzas
+png('images/pca_variances.png')
+plot(acp, type = "l", main = "PCA Variances") #Varianzas
+dev.off()
 summary(acp) # Ver la proporción acumulativa
+png('images/pca_directionsofprincipalcomponents.png')
 biplot(acp, scale = 0)
+dev.off()
 
 pc1 <- apply(acp$rotation[, 1] * data, 1, sum)
 pc2 <- apply(acp$rotation[, 2] * data, 1, sum)
@@ -46,7 +50,7 @@ pca$pc2 <- pc2
 pca <- pca[, 7:8]
 plot(pca, main = "PCA")
 
-write.csv(pca, file="data/pca_pc1pc2.csv", row.names = TRUE)
+write.csv(pca, file = "data/pca_pc1pc2.csv", row.names = TRUE)
 # --------------------------------------------------------------------------------
 # PARETO
 # Bubble Sort Function
@@ -87,7 +91,7 @@ sort.b <- function(x)
 # Ventas totales por cliente
 total_ventas <- c()
 for (i in 1:nrow(data)) {
-  total_ventas_i <- as.numeric(sum(data[i,]))
+  total_ventas_i <- as.numeric(sum(data[i, ]))
   total_ventas[i] <- as.numeric(total_ventas_i)
 }
 
@@ -161,47 +165,64 @@ print(topmean)
 print(toptype)
 print(toprow)
 print(topcol)
+
 # Plot factor de Silhouette
-#windows()
 sil <- silhouette (topcustomer.som$unit.classif, dis)
+png('images/silhouette.png')
 plot(sil,
      col = 1:(toprow * topcol),
      border = NA,
      main = "Silhouette")
-#Plot
-#
+dev.off()
+
+#Plots
 #windows()
-plot(topcustomer.som, type = "changes", main = "Customer data: SOM")
-#
-plot(topcustomer.som, main = "Customer data")
+# plot the changes
+png('images/som_changes.png')
+plot(topcustomer.som, type = "changes", main = "Changes")
+dev.off()
+# plot the customer data
+png('images/som_data.png')
+plot(topcustomer.som, main = "Data")
+dev.off()
 # plot the quantity of samples
-plot(topcustomer.som, type = "count", main = "Customer data: count")
+png('images/som_count.png')
+plot(topcustomer.som, type = "count", main = "Count")
+dev.off()
 # plot the distance matrix
-plot(topcustomer.som, type = "quality")
+png('images/som_quality.png')
+plot(topcustomer.som, type = "quality", main = "Quality")
+dev.off()
 # plot the codebooks vectors
-plot(topcustomer.som, type = "codes")
+png('images/som_codes.png')
+plot(topcustomer.som, type = "codes", main = "Codes")
+dev.off()
 # plot the mapping
-plot(topcustomer.som, type = "mapping", main = "Customer data: mapping")
+png('images/som_mapping.png')
+plot(topcustomer.som, type = "mapping", main = "Mapping")
+dev.off()
 # plot the distances
-#plot(topcustomer.som, type = "dist.neighbours", main = "Customer data: distances")
+#png('images/som_distances.png')
+#plot(topcustomer.som, type = "dist.neighbours", main = "Distances")
+#dev.off()
 
 # Calculo de los representantes de los grupos
-data <- cbind(data,Grupo=topcustomer.som$unit.classif)
+data <- cbind(data, Grupo = topcustomer.som$unit.classif)
 # Calcular media del grupo 1 en frescos
 suma <- 0
 contador <- 0
-for (i in 1:max(data[,7])) {
+for (i in 1:max(data[, 7])) {
   for (j in 1:nrow(data)) {
-    if(data[j,7]==1){
-      suma <- suma + data[j,1]
+    if (data[j, 7] == 1) {
+      suma <- suma + data[j, 1]
       contador <- contador + 1
     }
   }
-  grupo1 <- suma/contador
+  grupo1 <- suma / contador
   suma <- 0
   contador <- 0
 }
 print(grupo1)
 
 # Exportar datos
-write.csv(data, file="data/data_groups.csv", row.names = TRUE)
+write.csv(data, file = "data/data_groups.csv", row.names = TRUE)
