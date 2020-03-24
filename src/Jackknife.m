@@ -1,4 +1,19 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% C á l c u l o   d e l   B I C
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Kmax=20;    % número máximo de cluster a analizar
+for K=2:Kmax
+    [cidx] = kmeans(X, K,'Replicates',10);
+    [Bic_K,xi]=BIC(K,cidx,X);
+    BICK(K)=Bic_K;
+end
+figure(2)
+plot(2:K',BICK(2:K)','s-','MarkerSize',6,...
+     'MarkerEdgeColor','r', 'MarkerFaceColor','r')
+xlabel('K','fontsize',18)      % etiquetado del eje-x
+ylabel('BIC(K)','fontsize',18) % etiquetado del eje-y
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % D e t e c c i ó n   d e   o b s e r v a c i o n e s  
 % i n f l u y e  n t e s :  M é t o d o  d e  J A C K N I  F E
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -38,18 +53,4 @@ for i=1:N
     end
 end
 outliers            % impresión por pantalla de los outliers 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% C á l c u l o   d e l   B I C
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-Kmax=20;    % número máximo de cluster a analizar
-for K=2:Kmax
-    [cidx] = kmeans(X, K,'Replicates',10);
-    [Bic_K,xi]=BIC(K,cidx,X);
-    BICK(K)=Bic_K;
-end
-figure(2)
-plot(2:K',BICK(2:K)','s-','MarkerSize',6,...
-     'MarkerEdgeColor','r', 'MarkerFaceColor','r')
-xlabel('K','fontsize',18)      % etiquetado del eje-x
-ylabel('BIC(K)','fontsize',18) % etiquetado del eje-y
+writematrix(outliers,'data/outliers.csv')
