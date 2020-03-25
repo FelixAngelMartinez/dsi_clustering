@@ -59,11 +59,11 @@ write.csv(pca, file = "data/pca_pc1pc2.csv", row.names = TRUE)
 outliers_cols <-
   as.data.frame(read.csv("data/outliers.csv", header = F))
 outliers_rows <- t(outliers_cols)
-#outliers_data <- matrix(1:1,nrow = nrow(outliers_rows), ncol=ncol(data))
+only_outliers <- data.frame()
 for (i in nrow(outliers_rows):1) {
   print(i)
   print(outliers_rows[i])
-  #outliers_data[i,] <- data[outliers_rows[i],]
+  only_outliers <- rbind(only_outliers,data[outliers_rows[i],])
   data_without_outliers <- data[-outliers_rows[i], ]
 }
 
@@ -226,26 +226,29 @@ dev.off()
 
 # Calculo de los representantes de los grupos
 data <- cbind(data, Grupo = topcustomer.som$unit.classif)
+
 # Calcular media del grupo 1 en frescos
 suma <- 0
 contador <- 0
 medias <- matrix(nrow=max(data[, 7]), ncol=ncol(data - 1))
-#colnames(grupo) <- c("media")
 
-for (i in 1:max(data[, 7])) {
-  for (variables in 1:ncol(data - 1)) {
-    for (j in 1:nrow(data)) {
-      if (data[j, 7] == i) {
-        suma <- suma + data[j, 1]
+#Grupos, Variables, Filas
+for (grupo in 1:max(data[, 7])) {
+  for (variable in 1:ncol(data)) {
+    for (row in 1:nrow(data)) {
+      if (data[row, 7] == grupo) {
+        suma <- suma + data[row, variable]
         contador <- contador + 1
       }
     }
-    medias[i, variables] <- suma / contador
+    medias[grupo, variable] <- suma / contador
+    print(medias[grupo, variable])
     suma <- 0
     contador <- 0
   }
 }
-print(grupo)
+print(medias)
+
 
 # Exportar datos
 write.csv(data, file = "data/data_groups.csv", row.names = TRUE)
