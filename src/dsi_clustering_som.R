@@ -67,6 +67,7 @@ for (i in nrow(outliers_rows):1) {
   data_without_outliers <- data[-outliers_rows[i], ]
 }
 
+write.csv(only_outliers, file = "data/data_outliers.csv", row.names = TRUE)
 # --------------------------------------------------------------------------------
 # PARETO
 # Bubble Sort Function
