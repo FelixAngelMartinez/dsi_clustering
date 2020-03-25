@@ -48,9 +48,25 @@ pca$pc1 <- pc1
 pca$pc2 <- pc2
 
 pca <- pca[, 7:8]
-plot(pca, main = "PCA")
+png('images/pca_pc1pc2.png')
+plot(pca, main = "PCA PC1 & PC2")
+dev.off()
 
 write.csv(pca, file = "data/pca_pc1pc2.csv", row.names = TRUE)
+
+# --------------------------------------------------------------------------------
+# Eliminar outliers
+outliers_cols <-
+  as.data.frame(read.csv("data/outliers.csv", header = F))
+outliers_rows <- t(outliers_cols)
+#outliers_data <- matrix(1:1,nrow = nrow(outliers_rows), ncol=ncol(data))
+for (i in nrow(outliers_rows):1) {
+  print(i)
+  print(outliers_rows[i])
+  #outliers_data[i,] <- data[outliers_rows[i],]
+  data_without_outliers <- data[-outliers_rows[i], ]
+}
+
 # --------------------------------------------------------------------------------
 # PARETO
 # Bubble Sort Function
@@ -91,7 +107,7 @@ sort.b <- function(x)
 # Ventas totales por cliente
 total_ventas <- c()
 for (i in 1:nrow(data)) {
-  total_ventas_i <- as.numeric(sum(data[i, ]))
+  total_ventas_i <- as.numeric(sum(data[i,]))
   total_ventas[i] <- as.numeric(total_ventas_i)
 }
 
@@ -99,25 +115,27 @@ for (i in 1:nrow(data)) {
 ordenados <- sort.b(total_ventas)
 
 # Calculo de la suma total del 20% de los clientes constituyen el 80% de los ingresos
-calculoSuma <- sum(ordenados[352:440]) / sum(ordenados)
-print(calculoSuma)
+calculoSuma <-
+  sum(ordenados[trunc(0.8 * (nrow(data))):nrow(data)]) / sum(ordenados)
+#print(calculoSuma)
 # Conocer cual realmente cual sería el porcentaje que nos da el 80% de las ventas
 calculoSuma <- 0
 i <- 0
 while (calculoSuma < 0.80) {
-  calculoSuma <- sum(ordenados[(440 - i):440]) / sum(ordenados)
-  print(calculoSuma)
+  calculoSuma <-
+    sum(ordenados[(nrow(data) - i):nrow(data)]) / sum(ordenados)
+  #print(calculoSuma)
   i <- i + 1
 }
-print(i)
-print((440 - i) / 440)
+#print(i)
+#print((nrow(data) - i) / nrow(data)) # Porcentaje necesario del conjunto de daots que cumpla el 80% de los ingresos
 
 # --------------------------------------------------------------------------------
 # SOM -> https://cran.r-project.org/web/packages/kohonen/kohonen.pdf https://www.rdocumentation.org/packages/kohonen/versions/2.0.19/topics/som
 # --------------------------------------------------------------------------------
 # silhouette -> https://stackoverflow.com/questions/33999224/silhouette-plot-in-r
 # Interpretación: -1 si es un mal agrupamiento, 0 si es indiferente, 1 si es un buen agrupamiento
-data <- as.matrix(data)
+data <- as.matrix(data_without_outliers)
 types <- 2
 maxrow <- 5
 maxcol <- 5
@@ -211,18 +229,23 @@ data <- cbind(data, Grupo = topcustomer.som$unit.classif)
 # Calcular media del grupo 1 en frescos
 suma <- 0
 contador <- 0
+medias <- matrix(nrow=max(data[, 7]), ncol=ncol(data - 1))
+#colnames(grupo) <- c("media")
+
 for (i in 1:max(data[, 7])) {
-  for (j in 1:nrow(data)) {
-    if (data[j, 7] == 1) {
-      suma <- suma + data[j, 1]
-      contador <- contador + 1
+  for (variables in 1:ncol(data - 1)) {
+    for (j in 1:nrow(data)) {
+      if (data[j, 7] == i) {
+        suma <- suma + data[j, 1]
+        contador <- contador + 1
+      }
     }
+    medias[i, variables] <- suma / contador
+    suma <- 0
+    contador <- 0
   }
-  grupo1 <- suma / contador
-  suma <- 0
-  contador <- 0
 }
-print(grupo1)
+print(grupo)
 
 # Exportar datos
 write.csv(data, file = "data/data_groups.csv", row.names = TRUE)
