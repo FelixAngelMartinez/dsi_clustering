@@ -2,7 +2,8 @@
 Proyecto para la asignatura del Máster en Ingeniería Informática llamada Desarrollo de Sistemas Inteligentes, en la cual, se empleará R para realizar un análisis de los datos de ventas de un mayorista para determinar los grupos de clientes que tiene empleando la técnica Mapas Auto-organizados.
 Como hemos mencionado con anterioridad se ha empleado el algoritmo asignado por los profesores, SOM, del inglés Self-organizing maps.
 
-<img src="/Customer_data_count.png?raw=true" width="880">
+<img src="/img/customer_data_count.png?raw=true" width="440">
+<img src="/img/customer_data.png?raw=true" width="440">
 
 ## Elementos
 En dicho repositorio nos encontramos una carpeta /src la cual contiene los archivos en R para ejecutar dicho algoritmo sobre los datos en /src/data .
@@ -41,3 +42,4 @@ El orden adecuado de ejecución lo encontraremos descrito en la memoria adjunta.
 
 ## Memoria
 Consultar la memoria incluida dentro de la carpeta doc, la cual contiene un paper en formato ACM con toda la información de dicho trabajo y conclusiones de éste.
+[Memoria](https://github.com/FelixAngelMartinez/dsi_clustering/blob/master/doc/DSI__Trabajo_de_Clustering.pdf)
