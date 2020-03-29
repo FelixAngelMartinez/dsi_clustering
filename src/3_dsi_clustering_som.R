@@ -208,7 +208,24 @@ for (grupo in 1:max(data[, 7])) {
   }
 }
 print(medias)
+# Medias totales de lo que venden todos los grupos
+for (grupo in 1:max(data[, 7])) {
+  mean(medias[grupo,1:6])
+}
 
+# Relacion
+mean(medias[2,1:6])/mean(medias[1,1:6])
 
 # Exportar datos
 write.csv(data, file = "data/data_groups.csv", row.names = TRUE)
+
+
+# Contraste de hipótesis
+# Sabemos que Lisboa (grupo 1 de la primera columna) es la ciudad con mayor PIB per capita de Portugal.
+# Por lo que queremos comprobar es si la media de las compras delicatessen es superior a la media de Portugal delicatessen.
+# https://rpubs.com/Jo_/contrastes_hipotesis_ttest
+datosoriginales <- read.csv("data/wholesale_customers_data.csv", header = T)
+mediaDelicatesssen <- mean(datosoriginales[,8])
+t.test( datosoriginales[which(datosoriginales$Region == 1),8],
+        mu = mediaDelicatesssen, 
+        alternative = "two.sided" ) # contraste bilateral

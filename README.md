@@ -2,6 +2,8 @@
 Proyecto para la asignatura del Máster en Ingeniería Informática llamada Desarrollo de Sistemas Inteligentes, en la cual, se empleará R para realizar un análisis de los datos de ventas de un mayorista para determinar los grupos de clientes que tiene empleando la técnica Mapas Auto-organizados.
 Como hemos mencionado con anterioridad se ha empleado el algoritmo asignado por los profesores, SOM, del inglés Self-organizing maps.
 
+<img src="/Customer_data_count.png?raw=true" width="880">
+
 ## Elementos
 En dicho repositorio nos encontramos una carpeta /src la cual contiene los archivos en R para ejecutar dicho algoritmo sobre los datos en /src/data .
 También tenemos la carpeta /documentation donde encontraremos la documentación resultante de dicho trabajo, la cual está escrita en formato ACM junto con el enunciado de la práctica.
@@ -29,11 +31,13 @@ Para la detección de valores fuera de lo común, o también conocido como "outl
 ### Grado de homogeneidad
 Se ha medido el grado de homogeneidad empleando BIC, esto ayudará a saber cuantos grupos son necesarios implementar en nuestro algoritmo SOM.
 
-
 ### Escalado de los datos
 No se ha procedido a un escalado de los datos dado que al aplicar un escalado, un mismo valor en diferentes columnas puede tener valores distintos, por lo que no sería lógico que por ejemplo tengamos que un cliente gasta 100€ en X y los mismo 100€ en Y valgan distinto. También al escalar los datos perdemos información semántica.
 
 ## Ejecución
 Para ejecutar dicho programa lo que debemos tener instalado es RStudio, ya que será el IDE desde donde ejecutaremos nuestro código.
 Para que el código se pueda ejecutar es necesario tener instaladas las librerias que aparecen al principio, para ello nos vamos a Tools -> Install Package , y ponemos el nombre de dichas librerias.
+El orden adecuado de ejecución lo encontraremos descrito en la memoria adjunta.
 
+## Memoria
+Consultar la memoria incluida dentro de la carpeta doc, la cual contiene un paper en formato ACM con toda la información de dicho trabajo y conclusiones de éste.
